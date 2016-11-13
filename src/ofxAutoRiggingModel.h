@@ -8,16 +8,24 @@
 #include "defmesh.h"
 #include "motion.h"
 
+enum AUTO_TYPE_RIGGING
+{
+	HUMAN,
+	HORSE,
+	TQUAD,
+	CENTAUR
+};
+
 class ofxAutoRiggingModel
 {
 	public:
-	    void load(string _fileMesh, string _fileMotion);
-	    void setTypeSkeleton(string type);
+	    void load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type=HUMAN, bool exports=false);
+	    void setTypeSkeleton(AUTO_TYPE_RIGGING type);
 	    void setRotation(ofVec4f rot);
 	    void setScale(float _s);
 	    void update();
 	    void drawSkeleton();
-	    ofMesh getMesh();
+	    ofVboMesh getMesh();
 
 	private:
 	    bool stopAtMesh;
@@ -30,7 +38,7 @@ class ofxAutoRiggingModel
 	    Skeleton given;
 	    HumanSkeleton human;
 	    string skeletonname;
-	    ofMesh lineSkeleton;
-	    ofMesh mesh;
+	    ofVboMesh lineSkeleton;
+	    ofVboMesh mesh;
 	    DefMesh * def;
 };

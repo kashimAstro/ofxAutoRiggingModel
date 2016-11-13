@@ -1,5 +1,6 @@
 #include "ofMain.h"
 #include "ofxAutoRiggingModel.h"
+#include "ofxFakeShadowMap.h"
 
 class ofApp : public ofBaseApp{
         public:
@@ -7,15 +8,22 @@ class ofApp : public ofBaseApp{
 		ofLight light;
 		ofMaterial mat;
 		ofxAutoRiggingModel rig;
+                ofxFakeShadowMap shadow;
 		bool showRig;
 
 		void setup(){
 			ofSetSmoothLighting(true);
-		        light.setDiffuseColor( ofColor(255.f, 255.f, 255.f));
-		        light.setSpecularColor( ofColor(255.f, 255.f, 255.f));
-		        mat.setShininess( 64 );
+			shadow.setup();
+		        shadow.setColors(ofColor(0,0,0));
+		        shadow.setAlpha(1.f);
+			shadow.setDirLight(ofVec3f(0.1,-0.2,0.2));
+		        light.setPosition(
+				ofMap(0.1,0,10,0,1000),
+		                ofMap(-0.2,0,10,0,1000),
+		                ofMap(0.2,0,10,0,1000)
+		        );
 
-			rig.load("FinalBaseMesh.obj","jumpAround.txt");
+			rig.load("test.obj","jumpAround.txt",HUMAN);
 			cam.setNearClip(.01);
 			cam.setFarClip(ofGetWidth()*2);
 			cam.setDistance(5);
@@ -26,22 +34,39 @@ class ofApp : public ofBaseApp{
 			rig.update();
 		}
 
-		void draw(){
-			ofEnableDepthTest();
-			cam.begin();
-		        ofEnableLighting();
-			light.enable();
-		        mat.begin();
+		void render(){
+			ofPushMatrix();
 			ofSetColor(ofColor::red);
 			if(showRig)
 				rig.drawSkeleton();
 			else
-				rig.getMesh().draw();
-			cam.end();
-		        mat.end();
+				rig.getMesh().drawWireframe();
+			ofPopMatrix();
+		}
+
+		void draw(){
+			ofEnableDepthTest();
+			cam.begin();
+
+		        ofEnableLighting();
+			light.enable();
+		        mat.begin();
+				render();
+				//plane
+				ofPushMatrix();
+				ofRotateX(90);
+				ofSetColor(200,0,0);
+			        ofDrawPlane(0,0,0,5,5);
+				ofPopMatrix();
+			mat.end();
 		        light.disable();
 		        ofDisableLighting();
 
+		        shadow.begin(cam);
+				render();
+			shadow.end();
+
+			cam.end();
 			ofDisableDepthTest();
 		}
 
@@ -54,13 +79,18 @@ class ofApp : public ofBaseApp{
 				rig.load("cheb.obj","wakeUpSequence2.txt");
 			if(key == '3')
 				rig.load("FinalBaseMesh.obj","jumpAround.txt");
+			if(key == '4')
+				rig.load("test.obj","crossWalk.txt");
+			if(key == '5')
+				rig.load("test.obj","walkAndSkip.txt");
+			if(key == '6')
+				rig.load("test.obj","walk.txt");
 		}
 };
 
 int main()
 {
 	ofGLWindowSettings settings;
-	settings.setGLVersion(3,2);
 	ofCreateWindow(settings);
 	ofRunApp(new ofApp());
 }

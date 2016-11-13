@@ -1,12 +1,13 @@
 #include "ofMain.h"
 #include "ofxAutoRiggingModel.h"
 
-void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion)
+void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type, bool exports)
 {
 	stopAtMesh       = true;
 	skelScale        = 2.;
 	noFit            = false;
-	skeleton = HumanSkeleton();
+	setTypeSkeleton(type);
+	//skeleton = HumanSkeleton();
 	lineSkeleton.setMode(OF_PRIMITIVE_LINES);
 	mesh.setMode(OF_PRIMITIVE_TRIANGLES);
 
@@ -78,36 +79,39 @@ void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion)
 						   o.embedding[given.fPrev()[i]][2]));
 	    }
 	}
-	//output skeleton embedding
-	for(int i = 0; i < (int)o.embedding.size(); ++i)
-		o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
-	ofstream os(ofToDataPath("bin/data/",true)+"/skeleton.out");
-	for(int i = 0; i < (int)o.embedding.size(); ++i) {
-		os << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] <<
-			   " " << o.embedding[i][2] << " " << skeleton.fPrev()[i] << endl;
-	}
-	//output attachment
-	std::ofstream astrm(ofToDataPath("bin/data/",true)+"/attachment.out");
-	for(int i = 0; i < (int)m.vertices.size(); ++i) {
-		Vector<double, -1> v = o.attachment->getWeights(i);
-		for(int j = 0; j < v.size(); ++j) {
-		    double d = floor(0.5 + v[j] * 10000.) / 10000.;
-		    astrm << d << " ";
+	if(exports)
+	{
+		//output skeleton embedding
+		for(int i = 0; i < (int)o.embedding.size(); ++i)
+			o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
+		ofstream os(ofToDataPath("bin/data/",true)+"/skeleton.out");
+		for(int i = 0; i < (int)o.embedding.size(); ++i) {
+			os << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] <<
+				   " " << o.embedding[i][2] << " " << skeleton.fPrev()[i] << endl;
 		}
-		astrm << endl;
+		//output attachment
+		std::ofstream astrm(ofToDataPath("bin/data/",true)+"/attachment.out");
+		for(int i = 0; i < (int)m.vertices.size(); ++i) {
+			Vector<double, -1> v = o.attachment->getWeights(i);
+			for(int j = 0; j < v.size(); ++j) {
+			    double d = floor(0.5 + v[j] * 10000.) / 10000.;
+			    astrm << d << " ";
+			}
+			astrm << endl;
+		}
 	}
 	delete o.attachment;
 }
 
-void ofxAutoRiggingModel::setTypeSkeleton(string type)
+void ofxAutoRiggingModel::setTypeSkeleton(AUTO_TYPE_RIGGING type)
 {
-	if(type == string("human"))
+	if(type == HUMAN)
 		skeleton = HumanSkeleton();
-	else if(type == string("horse"))
+	else if(type == HORSE)
 		skeleton = HorseSkeleton();
-	else if(type == string("quad"))
+	else if(type == TQUAD)
 		skeleton = QuadSkeleton();
-	else if(type == string("centaur"))
+	else if(type == CENTAUR)
 	       skeleton = CentaurSkeleton();
 }
 
@@ -139,10 +143,15 @@ void ofxAutoRiggingModel::drawSkeleton()
 		lineSkeleton.addVertex(ofVec3f( v[k][0], v[k][1], v[k][2] ));
 	    }
 	}
-	lineSkeleton.drawWireframe();
+	ofPushStyle();
+	ofPushMatrix();
+	ofSetLineWidth(4.5);
+	lineSkeleton.draw();
+	ofPopMatrix();
+	ofPopStyle();
 }
 
-ofMesh ofxAutoRiggingModel::getMesh()
+ofVboMesh ofxAutoRiggingModel::getMesh()
 {
 	mesh.clear();
 	Mesh m = def->getMesh();
