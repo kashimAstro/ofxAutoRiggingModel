@@ -24,6 +24,7 @@ class ofApp : public ofBaseApp{
 			ofEnableDepthTest();
 			cam.begin();
 				 ofScale(5,5,5);
+				 ofSetLineWidth(4);
 				 bvh.getMesh().draw();
 		                 shadow.begin(cam);
 					 bvh.getMesh().draw();
