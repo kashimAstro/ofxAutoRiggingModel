@@ -1,18 +1,16 @@
 #include "ofMain.h"
 #include "ofxAutoRiggingModel.h"
 
-void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type, bool exports)
+void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type, float _scale, bool exports)
 {
-	stopAtMesh       = true;
-	skelScale        = 2.;
-	noFit            = false;
+	noFit = false;
+	setScale(_scale); 
 	setTypeSkeleton(type);
-	//skeleton = HumanSkeleton();
 	lineSkeleton.setMode(OF_PRIMITIVE_LINES);
 	mesh.setMode(OF_PRIMITIVE_TRIANGLES);
 
-	Mesh m(ofToDataPath("bin/data/"+_fileMesh,true));
-	motionname = ofToDataPath("bin/data/"+_fileMotion,true);
+	Mesh m(ofToDataPath(_fileMesh,true));
+	motionname = ofToDataPath(_fileMotion,true);
 	if(m.vertices.size() == 0) 
 	{
 		ofLog()<<"Error Mesh size!";
@@ -24,16 +22,12 @@ void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_R
 	given = skeleton;
 	given.scale(skelScale * 0.7);
 
-	if(stopAtMesh)
+	vector<MeshVertex> v = m.vertices;
+	for(int i = 0; i < v.size(); i++ )
 	{
-		ofLog()<<"Mesh static!";
-		vector<MeshVertex> v = m.vertices;
-		for(int i = 0; i < v.size(); i++ )
-		{
-			mesh.addVertex(ofVec3f(v[i].pos[0],v[i].pos[1],v[i].pos[2]));
-			mesh.addNormal(ofVec3f(v[i].normal[0],v[i].normal[1],v[i].normal[2]));
-			mesh.addTexCoord(ofVec2f(v[i].texture[0],v[i].texture[1]));
-		}
+		mesh.addVertex(ofVec3f(v[i].pos[0],v[i].pos[1],v[i].pos[2]));
+		mesh.addNormal(ofVec3f(v[i].normal[0],v[i].normal[1],v[i].normal[2]));
+		mesh.addTexCoord(ofVec2f(v[i].texture[0],v[i].texture[1]));
 	}
 
 	PinocchioOutput o;
@@ -60,8 +54,6 @@ void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_R
 	    ofLog()<<"DefMesh !?";
 	}
 	else {
-	    //w->addMesh(new StaticDisplayMesh(m));
-	    ofLog()<<"Mesh static 2!";
 	    vector<MeshVertex> v = m.vertices;
 	    for(int i = 0; i < v.size(); i++ )
 	    {
@@ -84,13 +76,13 @@ void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_R
 		//output skeleton embedding
 		for(int i = 0; i < (int)o.embedding.size(); ++i)
 			o.embedding[i] = (o.embedding[i] - m.toAdd) / m.scale;
-		ofstream os(ofToDataPath("bin/data/",true)+"/skeleton.out");
+		ofstream os(ofToDataPath("skeleton.out",true));
 		for(int i = 0; i < (int)o.embedding.size(); ++i) {
 			os << i << " " << o.embedding[i][0] << " " << o.embedding[i][1] <<
 				   " " << o.embedding[i][2] << " " << skeleton.fPrev()[i] << endl;
 		}
 		//output attachment
-		std::ofstream astrm(ofToDataPath("bin/data/",true)+"/attachment.out");
+		std::ofstream astrm(ofToDataPath("/attachment.out",true));
 		for(int i = 0; i < (int)m.vertices.size(); ++i) {
 			Vector<double, -1> v = o.attachment->getWeights(i);
 			for(int j = 0; j < v.size(); ++j) {

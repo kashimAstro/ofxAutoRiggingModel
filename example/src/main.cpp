@@ -55,7 +55,7 @@ class ofApp : public ofBaseApp{
 				//plane
 				ofPushMatrix();
 				ofRotateX(90);
-				ofSetColor(200,0,0);
+				ofSetColor(ofColor::blue);
 			        ofDrawPlane(0,0,0,5,5);
 				ofPopMatrix();
 			mat.end();

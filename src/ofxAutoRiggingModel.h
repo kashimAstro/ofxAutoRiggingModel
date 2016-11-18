@@ -7,6 +7,8 @@
 #include "pinocchioApi.h"
 #include "defmesh.h"
 #include "motion.h"
+#include "bvh.h"
+#include "bvh-parser.h"
 
 enum AUTO_TYPE_RIGGING
 {
@@ -19,7 +21,7 @@ enum AUTO_TYPE_RIGGING
 class ofxAutoRiggingModel
 {
 	public:
-	    void load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type=HUMAN, bool exports=false);
+	    void load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type=HUMAN, float _scale=2.,bool exports=false);
 	    void setTypeSkeleton(AUTO_TYPE_RIGGING type);
 	    void setRotation(ofVec4f rot);
 	    void setScale(float _s);
