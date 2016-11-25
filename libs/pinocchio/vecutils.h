@@ -22,40 +22,40 @@
 #include "vector.h"
 
 template<class Real>
-void getBasis(const Vector<Real, 3> &n, Vector<Real, 3> &v1, Vector<Real, 3> &v2)
+void getBasis(const PVector<Real, 3> &n, PVector<Real, 3> &v1, PVector<Real, 3> &v2)
 {
     if(n.lengthsq() < Real(1e-16)) {
-        v1 = Vector<Real, 3>(1., 0., 0.);
-        v2 = Vector<Real, 3>(0., 1., 0.);
+        v1 = PVector<Real, 3>(1., 0., 0.);
+        v2 = PVector<Real, 3>(0., 1., 0.);
         return;
     }
     if(fabs(n[0]) <= fabs(n[1]) && fabs(n[0]) <= fabs(n[2]))
-        v2 = Vector<Real, 3>(1., 0., 0.);
+        v2 = PVector<Real, 3>(1., 0., 0.);
     else if(fabs(n[1]) <= fabs(n[2]))
-        v2 = Vector<Real, 3>(0., 1., 0.);
+        v2 = PVector<Real, 3>(0., 1., 0.);
     else
-        v2 = Vector<Real, 3>(0., 0., 1.);
+        v2 = PVector<Real, 3>(0., 0., 1.);
     
     v1 = (n % v2).normalize(); //first basis vector
     v2 = (n % v1).normalize(); //second basis vector
 }
 
 template<class Real, int Dim>
-Real distsqToLine(const Vector<Real, Dim> &v, const Vector<Real, Dim> &l, const Vector<Real, Dim> &dir)
+Real distsqToLine(const PVector<Real, Dim> &v, const PVector<Real, Dim> &l, const PVector<Real, Dim> &dir)
 {
   return max(Real(), (v - l).lengthsq() - SQR((v - l) * dir) / dir.lengthsq());
 }
 
 template<class Real, int Dim>
-Vector<Real, Dim> projToLine(const Vector<Real, Dim> &v, const Vector<Real, Dim> &l, const Vector<Real, Dim> &dir)
+PVector<Real, Dim> projToLine(const PVector<Real, Dim> &v, const PVector<Real, Dim> &l, const PVector<Real, Dim> &dir)
 {
   return l + (((v - l) * dir) / dir.lengthsq()) * dir;
 }
 
 template<class Real, int Dim>
-Real distsqToSeg(const Vector<Real, Dim> &v, const Vector<Real, Dim> &p1, const Vector<Real, Dim> &p2)
+Real distsqToSeg(const PVector<Real, Dim> &v, const PVector<Real, Dim> &p1, const PVector<Real, Dim> &p2)
 {
-  typedef Vector<Real, Dim> Vec;
+  typedef PVector<Real, Dim> Vec;
   
   Vec dir = p2 - p1;
   Vec difp2 = p2 - v;
@@ -73,9 +73,9 @@ Real distsqToSeg(const Vector<Real, Dim> &v, const Vector<Real, Dim> &p1, const 
 }
 
 template<class Real, int Dim>
-Vector<Real, Dim> projToSeg(const Vector<Real, Dim> &v, const Vector<Real, Dim> &p1, const Vector<Real, Dim> &p2)
+PVector<Real, Dim> projToSeg(const PVector<Real, Dim> &v, const PVector<Real, Dim> &p1, const PVector<Real, Dim> &p2)
 {
-  typedef Vector<Real, Dim> Vec;
+  typedef PVector<Real, Dim> Vec;
 
   Vec dir = p2 - p1;
 
@@ -111,9 +111,9 @@ Real getCircleIntersectionArea(const Real &d, const Real &r1, const Real &r2)
 }
 
 template<class Real>
-Vector<Real, 3> projToTri(const Vector<Real, 3> &from, const Vector<Real, 3> &p1, const Vector<Real, 3> &p2, const Vector<Real, 3> &p3)
+PVector<Real, 3> projToTri(const PVector<Real, 3> &from, const PVector<Real, 3> &p1, const PVector<Real, 3> &p2, const PVector<Real, 3> &p3)
 {
-    typedef Vector<Real, 3> Vec;
+    typedef PVector<Real, 3> Vec;
     Real tolsq(1e-16);
     
     Vec p2p1 = (p2 - p1);

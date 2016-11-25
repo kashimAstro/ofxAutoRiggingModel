@@ -36,12 +36,12 @@ public:
   const Value &getValue(int idx) const { return values[idx]; }
 
   template<class Real>
-  Real evaluate(const Vector<Real, Dim> &v) const
+  Real evaluate(const PVector<Real, Dim> &v) const
   {
     Real out(0);
     for(int i = 0; i < num; ++i) {
-        Vector<Real, Dim> corner;
-        BitComparator<Dim>::assignCorner(i, v, Vector<Real, Dim>(1.) - v, corner);
+        PVector<Real, Dim> corner;
+        BitComparator<Dim>::assignCorner(i, v, PVector<Real, Dim>(1.) - v, corner);
         Real factor = corner.accumulate(ident<Real>(), multiplies<Real>());
         out += (factor * Real(values[i]));
     }
@@ -49,7 +49,7 @@ public:
   }
 
   template<class Real>
-  Real integrate(const Rect<Real, Dim> &r) const
+  Real integrate(const PRect<Real, Dim> &r) const
   {
     return r.isEmpty() ? Real() : evaluate(r.getCenter()) * r.getContent();
   }

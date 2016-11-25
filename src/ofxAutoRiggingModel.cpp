@@ -84,7 +84,7 @@ void AutoRigging::ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion
 		//output attachment
 		std::ofstream astrm(ofToDataPath("/attachment.out",true));
 		for(int i = 0; i < (int)m.vertices.size(); ++i) {
-			Vector<double, -1> v = o.attachment->getWeights(i);
+			PVector<double, -1> v = o.attachment->getWeights(i);
 			for(int j = 0; j < v.size(); ++j) {
 			    double d = floor(0.5 + v[j] * 10000.) / 10000.;
 			    astrm << d << " ";

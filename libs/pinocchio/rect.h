@@ -26,20 +26,20 @@ template <int Dim> class RectOp;
 }
 
 template<class Real, int Dim>
-class Rect {
+class PRect {
 public:
-    typedef Vector<Real, Dim> Vec;
-    typedef Rect<Real, Dim> Self;
+    typedef PVector<Real, Dim> Vec;
+    typedef PRect<Real, Dim> Self;
     typedef _RectPrivate::RectOp<Dim> RO;
     
-    Rect() : empty(true) {}
-    Rect(const Vec &vec) : empty(false), lo(vec), hi(vec) {}
-    Rect(const Vec &inLo, const Vec &inHi) : lo(inLo), hi(inHi) { markEmpty(); }
-    Rect(const Rect &inRect) : empty(inRect.empty), lo(inRect.lo), hi(inRect.hi) {}
-    template<class R> Rect(const Rect<R, Dim> &inRect) : empty(inRect.empty), lo(inRect.lo), hi(inRect.hi) {}
+    PRect() : empty(true) {}
+    PRect(const Vec &vec) : empty(false), lo(vec), hi(vec) {}
+    PRect(const Vec &inLo, const Vec &inHi) : lo(inLo), hi(inHi) { markEmpty(); }
+    PRect(const PRect &inRect) : empty(inRect.empty), lo(inRect.lo), hi(inRect.hi) {}
+    template<class R> PRect(const PRect<R, Dim> &inRect) : empty(inRect.empty), lo(inRect.lo), hi(inRect.hi) {}
     
     //constructs a Rect given an iterator over points--could be optimized with a min-max
-    template<class Iter> Rect(Iter start, const Iter &finish) : empty(false)
+    template<class Iter> PRect(Iter start, const Iter &finish) : empty(false)
     {
         if(start == finish) {
             empty = true;
@@ -113,20 +113,20 @@ public:
     }
     
 private:
-    template<class R, int D> friend class Rect;
+    template<class R, int D> friend class PRect;
 
-    Rect(bool inEmpty, const Vec &inLo, const Vec &inHi) : empty(inEmpty), lo(inLo), hi(inHi) { }
+    PRect(bool inEmpty, const Vec &inLo, const Vec &inHi) : empty(inEmpty), lo(inLo), hi(inHi) { }
     void markEmpty() { empty = hi.accumulate(less<Real>(), logical_or<bool>(), lo); }
 
     bool empty;
     Vec lo, hi;
 };
 
-typedef Rect<double, 2> Rect2;
-typedef Rect<double, 3> Rect3;
+typedef PRect<double, 2> Rect2;
+typedef PRect<double, 3> Rect3;
 
 template <class charT, class traits, class Real, int Dim>
-        basic_ostream<charT,traits>& operator<<(basic_ostream<charT,traits>& os, const Rect<Real, Dim> &r)
+        basic_ostream<charT,traits>& operator<<(basic_ostream<charT,traits>& os, const PRect<Real, Dim> &r)
 {
     if(r.isEmpty())
         os << "Rect()";
@@ -136,12 +136,12 @@ template <class charT, class traits, class Real, int Dim>
 }
 
 namespace _RectPrivate {
-#define VRD Vector<R, D>
-#define RRD Rect<R, D>
+#define VRD PVector<R, D>
+#define RRD PRect<R, D>
 template <int Dim>
 class RectOp
 {
-private:
+public:
     static const int last = Dim - 1;
     typedef RectOp<Dim - 1> Next;
     template<int D> friend class RectOp;

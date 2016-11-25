@@ -52,8 +52,8 @@ template<int Dim, class Obj>
 class ObjectProjector
 {
 public:
-    typedef Vector<double, Dim> Vec;
-    typedef Rect<double, Dim> Rec;
+    typedef PVector<double, Dim> Vec;
+    typedef PRect<double, Dim> Rec;
 
     ObjectProjector() {}
     ObjectProjector(const vector<Obj> &inObjs) : objs(inObjs)

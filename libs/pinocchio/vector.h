@@ -33,27 +33,27 @@ template <int Dim> class VecOp;
 }
 
 template <class Real, int Dim>
-class Vector
+class PVector
 {
 public:
-    typedef Vector<Real, Dim> Self;
+    typedef PVector<Real, Dim> Self;
     typedef _VectorPrivate::VecOp<Dim> VO;
 
-    Vector() { VO::assign(Real(), *this); }
-    Vector(const Self &other) { VO::assign(other, *this); }
-    explicit Vector(const Real &m) { VO::assign(m, *this); }
-    Vector(const Real &m1, const Real &m2) { m[0] = m1; m[1] = m2; checkDim<2>(VO()); }
-    Vector(const Real &m1, const Real &m2, const Real &m3) { m[0] = m1; m[1] = m2; m[2] = m3; checkDim<3>(VO()); }
-    template<class R> Vector(const Vector<R, Dim> &other) { VO::assign(other, *this); }
+    PVector() { VO::assign(Real(), *this); }
+    PVector(const Self &other) { VO::assign(other, *this); }
+    explicit PVector(const Real &m) { VO::assign(m, *this); }
+    PVector(const Real &m1, const Real &m2) { m[0] = m1; m[1] = m2; checkDim<2>(VO()); }
+    PVector(const Real &m1, const Real &m2, const Real &m3) { m[0] = m1; m[1] = m2; m[2] = m3; checkDim<3>(VO()); }
+    template<class R> PVector(const PVector<R, Dim> &other) { VO::assign(other, *this); }
 
     Real &operator[](int n) { return m[n]; }
     const Real &operator[](int n) const { return m[n]; }
 
 //basic recursive functions
-    template<class F> Vector<typename F::result_type, Dim> apply(const F &func) const
+    template<class F> PVector<typename F::result_type, Dim> apply(const F &func) const
     { return VO::apply(func, *this); }
 
-    template<class F> Vector<typename F::result_type, Dim> apply(const F &func, const Self &other) const
+    template<class F> PVector<typename F::result_type, Dim> apply(const F &func, const Self &other) const
     { return VO::apply(func, *this, other); }
 
     template<class Op, class Accum>
@@ -88,35 +88,35 @@ public:
     int size() const { return Dim; }
     
 private:
-    template<class R, int D> friend class Vector;
+    template<class R, int D> friend class PVector;
     template<int WantedDim> void checkDim(const _VectorPrivate::VecOp<WantedDim> &) const {}
 
     Real m[Dim];
 };
 
 template <class Real>
-class Vector<Real, -1>
+class PVector<Real, -1>
 {
 public:
-    typedef Vector<Real, -1> Self;
+    typedef PVector<Real, -1> Self;
 
-    Vector() { }
-    Vector(const Self &other) : m(other.m) { }
-    Vector(const vector<Real> &inM) : m(inM) { }
-    explicit Vector(const Real &inM) { m.push_back(inM); }
+    PVector() { }
+    PVector(const Self &other) : m(other.m) { }
+    PVector(const vector<Real> &inM) : m(inM) { }
+    explicit PVector(const Real &inM) { m.push_back(inM); }
 
     Real &operator[](int n) { if((int)m.size() <= n) m.resize(n + 1); return m[n]; }
-    const Real &operator[](int n) const { if((int)m.size() <= n) const_cast<Vector<Real, -1> *>(this)->m.resize(n + 1); return m[n]; }
+    const Real &operator[](int n) const { if((int)m.size() <= n) const_cast<PVector<Real, -1> *>(this)->m.resize(n + 1); return m[n]; }
 
 //basic recursive functions
-    template<class F> Vector<typename F::result_type, -1> apply(const F &func) const
+    template<class F> PVector<typename F::result_type, -1> apply(const F &func) const
     { 
         vector<typename F::result_type> out(m.size());
         transform(m.begin(), m.end(), out.begin(), func);
-        return Vector<typename F::result_type, -1>(out);
+        return PVector<typename F::result_type, -1>(out);
     }
 
-    template<class F> Vector<typename F::result_type, -1> apply(const F &func, const Self &other) const
+    template<class F> PVector<typename F::result_type, -1> apply(const F &func, const Self &other) const
     {
         vector<typename F::result_type> out(max(m.size(), other.m.size()));
         if(m.size() == other.m.size())
@@ -128,7 +128,7 @@ public:
             transform(m.begin(), m.begin() + (other.m.end() - other.m.begin()), other.m.begin(), out.begin(), func);
             for(int i = other.m.size(); i < (int)m.size(); ++i) out[i] = func(m[i], Real());
         }
-        return Vector<typename F::result_type, -1>(out);
+        return PVector<typename F::result_type, -1>(out);
     }
 
     template<class Op, class Accum>
@@ -191,25 +191,25 @@ private:
 
 
 template <class Real, int Dim>
-Vector<Real, Dim> operator*(const Real &scalar, const Vector<Real, Dim> &vec)
+PVector<Real, Dim> operator*(const Real &scalar, const PVector<Real, Dim> &vec)
 {
     return vec * scalar; //multiplication commutes around here
 }
 
 //cross product
 template <class Real>
-Vector<Real, 3> operator%(const Vector<Real, 3> &v1, const Vector<Real, 3> &v2)
+PVector<Real, 3> operator%(const PVector<Real, 3> &v1, const PVector<Real, 3> &v2)
 {
-    return Vector<Real, 3>(v1[1] * v2[2] - v1[2] * v2[1],
+    return PVector<Real, 3>(v1[1] * v2[2] - v1[2] * v2[1],
                    v1[2] * v2[0] - v1[0] * v2[2],
                    v1[0] * v2[1] - v1[1] * v2[0]);
 }
 
-typedef Vector<double, 3> Vector3;
-typedef Vector<double, 2> Vector2;
+typedef PVector<double, 3> Vector3;
+typedef PVector<double, 2> Vector2;
 
 template <class charT, class traits, class Real, int Dim>
-basic_ostream<charT,traits>& operator<<(basic_ostream<charT,traits>& os, const Vector<Real, Dim> &v)
+basic_ostream<charT,traits>& operator<<(basic_ostream<charT,traits>& os, const PVector<Real, Dim> &v)
 {
     os << "[";
     int ms = Dim;
@@ -225,16 +225,16 @@ basic_ostream<charT,traits>& operator<<(basic_ostream<charT,traits>& os, const V
 }
 
 namespace _VectorPrivate {
-#define VRD Vector<R, D>
-#define VRD1 Vector<R1, D>
+#define VRD PVector<R, D>
+#define VRD1 PVector<R1, D>
 template <int Dim>
 class VecOp
 {
-private:
+public:
     static const int last = Dim - 1;
     typedef VecOp<Dim - 1> Next;
     template<int D> friend class VecOp;
-    template<class R, int D> friend class Vector;
+    template<class R, int D> friend class PVector;
 
     template<class R, class R1, int D>
     static void assign(const VRD1 &from, VRD &to) { to[last] = from[last]; Next::assign(from, to); }
@@ -243,12 +243,12 @@ private:
     static void assign(const R1 &from, VRD &to) { to[last] = from; Next::assign(from, to); }
 
     template<class R, int D, class F>
-    static Vector<typename F::result_type, D> apply(const F &func, const VRD &v)
-    { Vector<typename F::result_type, D> out; _apply(func, v, out); return out; }
+    static PVector<typename F::result_type, D> apply(const F &func, const VRD &v)
+    { PVector<typename F::result_type, D> out; _apply(func, v, out); return out; }
 
     template<class R, int D, class F>
-    static Vector<typename F::result_type, D> apply(const F &func, const VRD &v, const VRD &other)
-    { Vector<typename F::result_type, D> out; _apply(func, v, other, out); return out; }
+    static PVector<typename F::result_type, D> apply(const F &func, const VRD &v, const VRD &other)
+    { PVector<typename F::result_type, D> out; _apply(func, v, other, out); return out; }
 
     template<class R, int D, class Op, class Accum>
     static typename Accum::result_type accumulate(const Op &op, const Accum &accum, const VRD &v)
@@ -259,18 +259,18 @@ private:
     { return accum(op(v[last], other[last]), Next::accumulate(op, accum, v, other)); }
 
     template<class R, int D, class F>
-    static void _apply(const F &func, const VRD &v, Vector<typename F::result_type, D> &out)
+    static void _apply(const F &func, const VRD &v, PVector<typename F::result_type, D> &out)
     { out[last] = func(v[last]); Next::_apply(func, v, out); }
 
     template<class R, int D, class F>
-    static void _apply(const F &func, const VRD &v, const VRD &other, Vector<typename F::result_type, D> &out)
+    static void _apply(const F &func, const VRD &v, const VRD &other, PVector<typename F::result_type, D> &out)
     { out[last] = func(v[last], other[last]); Next::_apply(func, v, other, out); }
 };
 
 template <>
 class VecOp<1>
 {
-private:
+public:
     template<int D> friend class VecOp;
 
     template<class R, class R1, int D> static void assign(const VRD1 &from, VRD &to) { to[0] = from[0]; }
@@ -278,12 +278,12 @@ private:
     template<class R, class R1, int D> static void assign(const R1 &from, VRD &to) { to[0] = from; }
     
     template<class R, int D, class F>
-    static Vector<typename F::result_type, D> apply(const F &func, const VRD &v)
-    { Vector<typename F::result_type, D> out; _apply(func, v, out); return out; }
+    static PVector<typename F::result_type, D> apply(const F &func, const VRD &v)
+    { PVector<typename F::result_type, D> out; _apply(func, v, out); return out; }
 
     template<class R, int D, class F>
-    static Vector<typename F::result_type, D> apply(const F &func, const VRD &v, const VRD &other)
-    { Vector<typename F::result_type, D> out; _apply(func, v, other, out); return out; }
+    static PVector<typename F::result_type, D> apply(const F &func, const VRD &v, const VRD &other)
+    { PVector<typename F::result_type, D> out; _apply(func, v, other, out); return out; }
     
     template<class R, int D, class Op, class Accum>
     static typename Accum::result_type accumulate(const Op &op, const Accum &, const VRD &v)
@@ -294,11 +294,11 @@ private:
     { return op(v[0], other[0]); }
 
     template<class R, int D, class F>
-    static void _apply(const F &func, const VRD &v, Vector<typename F::result_type, D> &out)
+    static void _apply(const F &func, const VRD &v, PVector<typename F::result_type, D> &out)
     { out[0] = func(v[0]); }
 
     template<class R, int D, class F>
-    static void _apply(const F &func, const VRD &v, const VRD &other, Vector<typename F::result_type, D> &out)
+    static void _apply(const F &func, const VRD &v, const VRD &other, PVector<typename F::result_type, D> &out)
     { out[0] = func(v[0], other[0]); }
 };
 } //namespace _VectorPrivate
