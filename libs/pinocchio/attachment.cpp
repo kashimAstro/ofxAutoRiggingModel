@@ -28,7 +28,7 @@ public:
     AttachmentPrivate() {}
     virtual ~AttachmentPrivate() {}
     virtual Mesh deform(const Mesh &mesh, const vector<Transform<> > &transforms) const = 0;
-    virtual Vector<double, -1> getWeights(int i) const = 0;
+    virtual PVector<double, -1> getWeights(int i) const = 0;
     virtual AttachmentPrivate *clone() const = 0;
 };
 
@@ -219,7 +219,7 @@ public:
         return out;
     }
 
-    Vector<double, -1> getWeights(int i) const { return weights[i]; }
+    PVector<double, -1> getWeights(int i) const { return weights[i]; }
 
     AttachmentPrivate *clone() const
     {
@@ -229,7 +229,7 @@ public:
     }
 
 private:
-    vector<Vector<double, -1> > weights;
+    vector<PVector<double, -1> > weights;
     vector<vector<pair<int, double> > > nzweights; //sparse representation
 };
 
@@ -244,7 +244,7 @@ Attachment::Attachment(const Attachment &att)
     a = att.a->clone();
 }
 
-Vector<double, -1> Attachment::getWeights(int i) const { return a->getWeights(i); }
+PVector<double, -1> Attachment::getWeights(int i) const { return a->getWeights(i); }
 
 Mesh Attachment::deform(const Mesh &mesh, const vector<Transform<> > &transforms) const
 {

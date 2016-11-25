@@ -38,7 +38,7 @@ struct RP //information for refined embedding
     ObjectProjector<3, Vec3Object> medProjector;
 };
 
-template<class Real> Real computeFineError(const vector<Vector<Real, 3> > &match, RP *rp)
+template<class Real> Real computeFineError(const vector<PVector<Real, 3> > &match, RP *rp)
 {
     Real out = Real();
     int i;
@@ -54,9 +54,9 @@ template<class Real> Real computeFineError(const vector<Vector<Real, 3> > &match
         const int samples = 10;
         for(int k = 0; k < samples; ++k) {
             double frac = double(k) / double(samples);
-            Vector<Real, 3> cur = match[i] * Real(1. - frac) + match[prev] * Real(frac);
+            PVector<Real, 3> cur = match[i] * Real(1. - frac) + match[prev] * Real(frac);
             Vector3 m = rp->medProjector.project(cur);
-            Real medDist = (cur - Vector<Real, 3>(m)).length();
+            Real medDist = (cur - PVector<Real, 3>(m)).length();
             Real surfDist = -rp->distanceField->locate(cur)->evaluate(cur);
             Real penalty = SQR(min(medDist, Real(0.001) + max(Real(0.), Real(0.05) - surfDist)));
             if(penalty > Real(SQR(0.003)))
@@ -80,8 +80,8 @@ template<class Real> Real computeFineError(const vector<Vector<Real, 3> > &match
         
         //--------------angle
         if(distSq > Real(1e-16)) {
-            Vector<Real, 3> curDir = (match[i] - match[prev]).normalize();
-            Vector<Real, 3> skelDir = (rp->given.fGraph().verts[i] - rp->given.fGraph().verts[prev]).normalize();
+            PVector<Real, 3> curDir = (match[i] - match[prev]).normalize();
+            PVector<Real, 3> skelDir = (rp->given.fGraph().verts[i] - rp->given.fGraph().verts[prev]).normalize();
             if(curDir * skelDir < Real(1. - 1e-8))
                 anglePenalty = Real(0.5) * acos(curDir * skelDir);
             anglePenalty = CUBE(Real(0.3) + anglePenalty);
@@ -148,7 +148,7 @@ vector<Vector3> refineEmbedding(TreeType *distanceField, const vector<Vector3> &
         Debugging::out() << "E = " << computeFineError(fineEmbedding, &rp) << endl;
         
         for(int j = 0; j < 2; ++j) {
-            vector<Vector<DType1, 3> > dMatch(sz);
+            vector<PVector<DType1, 3> > dMatch(sz);
             for(i = 0; i < sz; ++i) {
                 dMatch[i][0] = DType1(fineEmbedding[i][0], i * 3);
                 dMatch[i][1] = DType1(fineEmbedding[i][1], i * 3 + 1);
@@ -170,7 +170,7 @@ vector<Vector3> refineEmbedding(TreeType *distanceField, const vector<Vector3> &
         for(cur = 1; cur < sz; ++cur) {
             int prev = skeleton.fPrev()[cur];
             
-            vector<Vector<DType, 3> > dMatch(sz);
+            vector<PVector<DType, 3> > dMatch(sz);
             for(i = 0; i < sz; ++i) {
                 dMatch[i][0] = DType(fineEmbedding[i][0]);
                 dMatch[i][1] = DType(fineEmbedding[i][1]);

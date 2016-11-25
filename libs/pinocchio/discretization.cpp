@@ -61,7 +61,7 @@ TreeType *constructDistanceField(const Mesh &m, double tol)
 double getMinDot(TreeType *distanceField, const Vector3 &c, double step)
 {
     typedef Deriv<double, 3> D;
-    typedef Vector<D, 3> VD;
+    typedef PVector<D, 3> VD;
     
     int i, j;
     vector<Vector3> vecs;

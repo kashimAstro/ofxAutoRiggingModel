@@ -7,11 +7,11 @@ Vectorn<Real> getFeet(const vector<Transform<Real> > &transforms, const vector<V
 {
     int i;
     Vectorn<Real> out;
-    Vectorn<Vector<Real, 3> > results(joints.size());
+    Vectorn<PVector<Real, 3> > results(joints.size());
 
-    results[0] = transforms[0] * Vector<Real, 3>(joints[0]);
+    results[0] = transforms[0] * PVector<Real, 3>(joints[0]);
     for(i = 1; i < (int)joints.size(); ++i) {
-        results[i] = results[prev[i]] + transforms[i - 1].getRot() * Vector<Real, 3>(joints[i] - joints[prev[i]]);
+        results[i] = results[prev[i]] + transforms[i - 1].getRot() * PVector<Real, 3>(joints[i] - joints[prev[i]]);
     }
 
     out.push_back(results[7][0]);
@@ -84,7 +84,7 @@ Matrixn<double> MotionFilter::getJac(const vector<Transform<> > &transforms) con
     int i, j;
 
     Vectorn<double> transVec = toVector(transforms);
-    Vector<D, 3> trans0;
+    PVector<D, 3> trans0;
     for(i = 0; i < 3; ++i)
         trans0[i] = D(transVec[i], i);
 
@@ -92,7 +92,7 @@ Matrixn<double> MotionFilter::getJac(const vector<Transform<> > &transforms) con
         int curIdx = 3 + i * 4;
 
         Quaternion<D> rot;
-        rot.set(D(transVec[curIdx], curIdx), Vector<D, 3>(D(transVec[curIdx + 1], curIdx + 1),
+        rot.set(D(transVec[curIdx], curIdx), PVector<D, 3>(D(transVec[curIdx + 1], curIdx + 1),
                                                           D(transVec[curIdx + 2], curIdx + 2),
                                                           D(transVec[curIdx + 3], curIdx + 3)));
         

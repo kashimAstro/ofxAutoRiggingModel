@@ -31,7 +31,7 @@ template<int Dim>
 class DistFunction : public Multilinear<double, Dim>
 {
     typedef Multilinear<double, Dim> super;
-    typedef Rect<double, Dim> MyRect;
+    typedef PRect<double, Dim> MyRect;
 public:
     template<class Eval> void initFunc(const Eval &eval, const MyRect &rect)
     {
@@ -59,7 +59,7 @@ public:
     void fullSplit(const Eval &eval, double tol, DRootNode<DistData<Dim>, Dim, Indexer> *rootNode, int level = 0, bool cropOutside = false)
     {
         int i;
-        const Rect<double, Dim> &rect = node->getRect();
+        const PRect<double, Dim> &rect = node->getRect();
         node->initFunc(eval, rect);
         
         bool nextCropOutside = cropOutside;
@@ -81,9 +81,9 @@ public:
             int idx[Dim + 1];
             for(i = 0; i < Dim + 1; ++i)
                 idx[i] = 0;
-            Vector<double, Dim> center = rect.getCenter();
+            PVector<double, Dim> center = rect.getCenter();
             while(idx[Dim] == 0) {
-                Vector<double, Dim> cur;
+                PVector<double, Dim> cur;
                 bool anyMid = false;
                 for(i = 0; i < Dim; ++i) {
                     switch(idx[i]) {
@@ -110,18 +110,18 @@ public:
             return;
         rootNode->split(node);
         for(i = 0; i < NodeType::numChildren; ++i) {
-            eval.setRect(Rect<double, Dim>(rect.getCorner(i)) | Rect<double, Dim>(rect.getCenter()));
+            eval.setRect(PRect<double, Dim>(rect.getCorner(i)) | PRect<double, Dim>(rect.getCenter()));
             node->getChild(i)->fullSplit(eval, tol, rootNode, level + 1, nextCropOutside);
         }
     }
 
-    template<class Real> Real evaluate(const Vector<Real, Dim> &v)
+    template<class Real> Real evaluate(const PVector<Real, Dim> &v)
     {
         if(node->getChild(0) == NULL) {
             return super::evaluate((v - node->getRect().getLo()).apply(divides<Real>(),
                                                                        node->getRect().getSize()));
         }
-        Vector<Real, Dim> center = node->getRect().getCenter();
+        PVector<Real, Dim> center = node->getRect().getCenter();
         int idx = 0;
         for(int i = 0; i < Dim; ++i)
             if(v[i] > center[i])
@@ -129,14 +129,14 @@ public:
         return node->getChild(idx)->evaluate(v);
     }
 
-    template<class Real> Real integrate(Rect<Real, Dim> r)
+    template<class Real> Real integrate(PRect<Real, Dim> r)
     {
-        r &= Rect<Real, Dim>(node->getRect());
+        r &= PRect<Real, Dim>(node->getRect());
         if(r.isEmpty())
             return Real();
         if(node->getChild(0) == NULL) {
-            Vector<Real, Dim> corner = node->getRect().getLo(), size = node->getRect().getSize();
-            Rect<Real, Dim> adjRect((r.getLo() - corner).apply(divides<Real>(), size),
+            PVector<Real, Dim> corner = node->getRect().getLo(), size = node->getRect().getSize();
+            PRect<Real, Dim> adjRect((r.getLo() - corner).apply(divides<Real>(), size),
                                     (r.getHi() - corner).apply(divides<Real>(), size));
             return Real(node->getRect().getContent()) * super::integrate(adjRect);
         }

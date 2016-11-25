@@ -72,7 +72,7 @@ public:
     virtual ~Attachment();
 
     Mesh deform(const Mesh &mesh, const vector<Transform<> > &transforms) const;
-    Vector<double, -1> getWeights(int i) const;
+    PVector<double, -1> getWeights(int i) const;
 private:
     AttachmentPrivate *a;
 };

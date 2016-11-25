@@ -30,15 +30,15 @@ public:
     Quaternion(const Quaternion &q) : r(q.r), v(q.v) {} //copy constructor
     template<class R> Quaternion(const Quaternion<R> &q) : r(q.r), v(q.v) {} //convert quaternions of other types
     //axis angle constructor:
-    template<class R> Quaternion(const Vector<R, 3> &axis, const R &angle) : r(cos(angle * Real(0.5))), v(sin(angle * Real(0.5)) * axis.normalize()) {}
+    template<class R> Quaternion(const PVector<R, 3> &axis, const R &angle) : r(cos(angle * Real(0.5))), v(sin(angle * Real(0.5)) * axis.normalize()) {}
     //minimum rotation constructor:
-    template<class R> Quaternion(const Vector<R, 3> &from, const Vector<R, 3> &to) : r(1.)
+    template<class R> Quaternion(const PVector<R, 3> &from, const PVector<R, 3> &to) : r(1.)
     {
         R fromLenSq = from.lengthsq(), toLenSq = to.lengthsq();
         if(fromLenSq < toLenSq) {
             if(fromLenSq < R(1e-16))
                 return;
-            Vector<R, 3> mid = from * sqrt(toLenSq / fromLenSq) + to;
+            PVector<R, 3> mid = from * sqrt(toLenSq / fromLenSq) + to;
             R fac = 1. / sqrt(mid.lengthsq() * toLenSq);
             r = (mid * to) * fac;
             v = (mid % to) * fac;
@@ -46,7 +46,7 @@ public:
         else {
             if(toLenSq < R(1e-16))
                 return;
-            Vector<R, 3> mid = from + to * sqrt(fromLenSq / toLenSq);
+            PVector<R, 3> mid = from + to * sqrt(fromLenSq / toLenSq);
             R fac = 1. / sqrt(mid.lengthsq() * fromLenSq);
             r = (from * mid) * fac;
             v = (from % mid) * fac;
@@ -57,13 +57,13 @@ public:
     Quaternion operator*(const Quaternion &q) const { return Quaternion(r * q.r - v * q.v, r * q.v + q.r * v + v % q.v); }
     
     //transforming a vector
-    Vector<Real, 3> operator*(const Vector<Real, 3> &p) const
+    PVector<Real, 3> operator*(const PVector<Real, 3> &p) const
     {
-        Vector<Real, 3> v2 = v + v;
-        Vector<Real, 3> vsq2 = v.apply(multiplies<Real>(), v2);
-        Vector<Real, 3> rv2 = r * v2;
-        Vector<Real, 3> vv2(v[1] * v2[2], v[0] * v2[2], v[0] * v2[1]);
-        return Vector<Real, 3>(p[0] * (Real(1.) - vsq2[1] - vsq2[2]) + p[1] * (vv2[2] - rv2[2]) + p[2] * (vv2[1] + rv2[1]),
+        PVector<Real, 3> v2 = v + v;
+        PVector<Real, 3> vsq2 = v.apply(multiplies<Real>(), v2);
+        PVector<Real, 3> rv2 = r * v2;
+        PVector<Real, 3> vv2(v[1] * v2[2], v[0] * v2[2], v[0] * v2[1]);
+        return PVector<Real, 3>(p[0] * (Real(1.) - vsq2[1] - vsq2[2]) + p[1] * (vv2[2] - rv2[2]) + p[2] * (vv2[1] + rv2[1]),
                                p[1] * (Real(1.) - vsq2[2] - vsq2[0]) + p[2] * (vv2[0] - rv2[0]) + p[0] * (vv2[2] + rv2[2]),
                                p[2] * (Real(1.) - vsq2[0] - vsq2[1]) + p[0] * (vv2[1] - rv2[1]) + p[1] * (vv2[0] + rv2[0]));
     }
@@ -77,24 +77,24 @@ public:
     Quaternion inverse() const { return Quaternion(-r, v); }
     
     Real getAngle() const { return Real(2.) * atan2(v.length(), r); }
-    Vector<Real, 3> getAxis() const { return v.normalize(); }
+    PVector<Real, 3> getAxis() const { return v.normalize(); }
     
     const Real &operator[](int i) const { return (i == 0) ? r : v[i - 1]; }
-    void set(const Real &inR, const Vector<Real, 3> &inV) {
+    void set(const Real &inR, const PVector<Real, 3> &inV) {
         Real ratio = Real(1.) / sqrt(inR * inR + inV.lengthsq()); 
         r = inR * ratio; v = inV * ratio; //normalize
     }
     
 private:
-    Quaternion(const Real &inR, const Vector<Real, 3> &inV) : r(inR), v(inV) {}
+    Quaternion(const Real &inR, const PVector<Real, 3> &inV) : r(inR), v(inV) {}
     
     Real r;
-    Vector<Real, 3> v;
+    PVector<Real, 3> v;
 };
 
 template<class Real = double> class Transform { //T(v) = (rot * v * scale) + trans
 public:
-    typedef Vector<Real, 3> Vec;
+    typedef PVector<Real, 3> Vec;
     
     Transform() : scale(1.) {}
     explicit Transform(const Real &inScale) : scale(inScale) {}
@@ -122,7 +122,7 @@ private:
 
 template<class Real = double> class Matrix3 {
 public:
-    typedef Vector<Real, 3> Vec;
+    typedef PVector<Real, 3> Vec;
     typedef Matrix3<Real> Self;
     
     Matrix3(const Real &diag = Real()) { m[0] = m[4] = m[8] = diag; m[1] = m[2] = m[3] = m[5] = m[6] = m[7] = Real(); }

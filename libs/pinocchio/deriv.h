@@ -31,7 +31,7 @@ public:
     Deriv(const Real &inX) : x(inX) {}
     Deriv(const Real &inX, int varNum) : x(inX) { d[varNum] = Real(1.); }
     Deriv(const Self &inD) : x(inD.x), d(inD.d) {}
-    Deriv(const Real &inX, const Vector<Real, Vars> &inD) : x(inX), d(inD) {}
+    Deriv(const Real &inX, const PVector<Real, Vars> &inD) : x(inX), d(inD) {}
     
     Real getReal() const { return x; }
     Real getDeriv(int num = 0) const { return d[num]; }
@@ -57,12 +57,12 @@ public:
     
     //for internal use
     const Real &_x() const { return x; }
-    const Vector<Real, Vars> &_d() const { return d; }
+    const PVector<Real, Vars> &_d() const { return d; }
         
 private:
     
     Real x;
-    Vector<Real, Vars> d;
+    PVector<Real, Vars> d;
 };
 
 #define DerivRV Deriv<Real, Vars>
