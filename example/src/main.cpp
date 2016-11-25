@@ -2,12 +2,13 @@
 #include "ofxAutoRiggingModel.h"
 #include "ofxFakeShadowMap.h"
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp
+{
         public:
 		ofEasyCam cam;
 		ofLight light;
 		ofMaterial mat;
-		ofxAutoRiggingModel rig;
+		AutoRigging::ofxAutoRiggingModel rig;
                 ofxFakeShadowMap shadow;
 		bool showRig;
 
@@ -23,7 +24,7 @@ class ofApp : public ofBaseApp{
 		                ofMap(0.2,0,10,0,1000)
 		        );
 
-			rig.load("test.obj","jumpAround.txt",HUMAN);
+			rig.load("test.obj","jumpAround.txt",AutoRigging::HUMAN);
 			cam.setNearClip(.01);
 			cam.setFarClip(ofGetWidth()*2);
 			cam.setDistance(5);

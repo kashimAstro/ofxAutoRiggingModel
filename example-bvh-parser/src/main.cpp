@@ -5,7 +5,7 @@
 class ofApp : public ofBaseApp{
 	public:
 		ofEasyCam cam;
-		ofxBVHParser bvh;
+		BVHParsing::ofxBVHParser bvh;
                 ofxFakeShadowMap shadow;
 
 		void setup(){

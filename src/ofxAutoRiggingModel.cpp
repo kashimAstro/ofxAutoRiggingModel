@@ -1,7 +1,7 @@
 #include "ofMain.h"
 #include "ofxAutoRiggingModel.h"
 
-void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type, float _scale, bool exports)
+void AutoRigging::ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_RIGGING type, float _scale, bool exports)
 {
 	noFit = false;
 	setScale(_scale); 
@@ -95,7 +95,7 @@ void ofxAutoRiggingModel::load(string _fileMesh, string _fileMotion, AUTO_TYPE_R
 	delete o.attachment;
 }
 
-void ofxAutoRiggingModel::setTypeSkeleton(AUTO_TYPE_RIGGING type)
+void AutoRigging::ofxAutoRiggingModel::setTypeSkeleton(AUTO_TYPE_RIGGING type)
 {
 	if(type == HUMAN)
 		skeleton = HumanSkeleton();
@@ -107,22 +107,22 @@ void ofxAutoRiggingModel::setTypeSkeleton(AUTO_TYPE_RIGGING type)
 	       skeleton = CentaurSkeleton();
 }
 
-void ofxAutoRiggingModel::setRotation(ofVec4f rot)
+void AutoRigging::ofxAutoRiggingModel::setRotation(ofVec4f rot)
 {
 	meshTransform = Quaternion<>(Vector3(rot.x, rot.y, rot.z), rot.w * M_PI / 180.) * meshTransform;
 }
 
-void ofxAutoRiggingModel::setScale(float _s) 
+void AutoRigging::ofxAutoRiggingModel::setScale(float _s) 
 {
 	skelScale = _s;
 }
 
-void ofxAutoRiggingModel::update()
+void AutoRigging::ofxAutoRiggingModel::update()
 {
 	def->updateIfHasMotion();
 }
 
-void ofxAutoRiggingModel::drawSkeleton()
+void AutoRigging::ofxAutoRiggingModel::drawSkeleton()
 {
 	lineSkeleton.clear();
 	vector<Vector3> v = def->getSkel();
@@ -143,7 +143,7 @@ void ofxAutoRiggingModel::drawSkeleton()
 	ofPopStyle();
 }
 
-ofVboMesh ofxAutoRiggingModel::getMesh()
+ofVboMesh AutoRigging::ofxAutoRiggingModel::getMesh()
 {
 	mesh.clear();
 	Mesh m = def->getMesh();
