@@ -28,6 +28,7 @@ namespace AutoRigging
 		    void setTypeSkeleton(AUTO_TYPE_RIGGING type);
 		    void setRotation(ofVec4f rot);
 		    void setScale(float _s);
+		    vector<ofVec3f> getBones();
 		    void update();
 		    void drawSkeleton();
 		    ofVboMesh getMesh();

@@ -122,6 +122,17 @@ void AutoRigging::ofxAutoRiggingModel::update()
 	def->updateIfHasMotion();
 }
 
+vector<ofVec3f> AutoRigging::ofxAutoRiggingModel::getBones()
+{
+	vector<ofVec3f> vec;
+	vector<Vector3> v = def->getSkel();
+        const vector<int> &prev = human.fPrev();
+	for(int j = 1; j < (int)prev.size(); ++j) {
+		vec.push_back(ofVec3f( v[j][0], v[j][1], v[j][2] ));
+	}
+	return vec; 
+}
+
 void AutoRigging::ofxAutoRiggingModel::drawSkeleton()
 {
 	lineSkeleton.clear();
@@ -130,6 +141,10 @@ void AutoRigging::ofxAutoRiggingModel::drawSkeleton()
 	{
 	    const vector<int> &prev = human.fPrev();
 	    for(int j = 1; j < (int)prev.size(); ++j) {
+		ofPushStyle();
+		ofSetColor(ofColor::red);
+		ofDrawSphere(v[j][0], v[j][1], v[j][2],0.03);
+		ofPopStyle();
 		int k = prev[j];
 		lineSkeleton.addVertex(ofVec3f( v[j][0], v[j][1], v[j][2] ));
 		lineSkeleton.addVertex(ofVec3f( v[k][0], v[k][1], v[k][2] ));
@@ -138,6 +153,7 @@ void AutoRigging::ofxAutoRiggingModel::drawSkeleton()
 	ofPushStyle();
 	ofPushMatrix();
 	ofSetLineWidth(4.5);
+	ofSetColor(ofColor::white);
 	lineSkeleton.draw();
 	ofPopMatrix();
 	ofPopStyle();
