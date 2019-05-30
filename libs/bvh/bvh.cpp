@@ -268,17 +268,5 @@ JOINT* Bvh::loadJoint(std::istream& stream, JOINT* parent)
             return joint;
 
     }
+    return joint;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
