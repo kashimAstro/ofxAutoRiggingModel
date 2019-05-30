@@ -5,6 +5,9 @@
 #include "vector.h"
 #include "transform.h"
 
+//class Matrixn;
+//class Vectorn;
+
 class MotionFilter
 {
 public:
